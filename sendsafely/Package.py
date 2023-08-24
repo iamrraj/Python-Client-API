@@ -95,6 +95,25 @@ class Package:
         if response["response"] != "SUCCESS":
             raise AddRecipientFailedException(details=response["message"])
         return response
+    
+    def add_recipients(self, emails):
+        """
+        Adds a list of recipients to this package
+        :param emails: A list of emails to add to this package
+        :return:
+        """
+        sendsafely = self.sendsafely
+        endpoint = "/package/" + self.package_id + "/recipients"
+        url = sendsafely.BASE_URL + endpoint
+        body = {'emails': emails}
+        headers = make_headers(sendsafely.API_SECRET, sendsafely.API_KEY, endpoint, request_body=json.dumps(body))
+        try:
+            response = requests.put(url, headers=headers, json=body).json()
+        except Exception as e:
+            raise AddRecipientFailedException(details=str(e))
+        if response["response"] != "SUCCESS":
+            raise AddRecipientFailedException(details=response["message"])
+        return response
 
     def update_recipient_phone_number(self, recipient_id, phone, country_code="US"):
         """
